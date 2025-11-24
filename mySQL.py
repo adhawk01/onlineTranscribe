@@ -1,157 +1,129 @@
-import sys
-sys.path.append("venv/Lib/site-packages/")
-from mysql.connector import Error
-from mysql.connector import pooling
-import random
+from mysql.connector import Error, pooling
 import json
-from config import serverName
-
 
 
 class MySQLClass:
     __instance = None
 
+    @staticmethod
     def getInstance():
-        """ Static access method. """
-        if MySQLClass.__instance == None:
+        if MySQLClass.__instance is None:
             MySQLClass()
         return MySQLClass.__instance
 
     def __init__(self):
-        if MySQLClass.__instance != None:
-            print("Already set ")
-        else:
-            try:
-                self.myConnectionPool = pooling.MySQLConnectionPool(pool_name="pynative_pool",
-                                                                    pool_size=5,
-                                                                    pool_reset_session=True,
-                                                                    host='localhost',
-                                                                    database='alberto',
-                                                                    user='root',
-                                                                    password='adHawk01')
+        if MySQLClass.__instance is not None:
+            print("Already set")
+            return
 
-                print("Printing connection pool properties ")
-                print("Connection Pool Name - ", self.myConnectionPool.pool_name)
-                print("Connection Pool Size - ",  self.myConnectionPool.pool_size)
-                self.update_query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))", "dummy")
-                self.update_query("SET @@lc_time_names = 'he_IL'", "dummy")
-                MySQLClass.__instance = self
-
-            except Error as e:
-                print("Error while connecting to MySQL using Connection pool ", e)
-
-    def select_query(self, query, user):
-        user = str(random.randint(1, 900))
-        print(f"getting connection for {user}")
-        globals()[f"Connect_object_{user}"] = self.myConnectionPool.get_connection()
-        print(query)
-        if globals()[f"Connect_object_{user}"].is_connected():
-            try:
-                print("getting cursor for user " + user)
-                myCursor = globals()[f"Connect_object_{user}"].cursor(buffered=True)
-                # myCursor.execute("SET @@lc_time_names = 'he_IL'")
-                myCursor.execute(query)
-            except Error as e:
-                print("Error while creating cursor and executing ", e)
-                if globals()[f"Connect_object_{user}"].is_connected():
-                    print("releasing the cursor")
-                    globals()[f"Connect_object_{user}"].close()
-                return False
-        resultsList = []
-        for row in myCursor:
-            resultsList.append(row)
-        if globals()[f"Connect_object_{user}"].is_connected():
-            print("releasing the cursor")
-            globals()[f"Connect_object_{user}"].close()
-            print("returning " + str(type(resultsList)))
-        else:
-            print("Cursor not connected")
-        return resultsList
-
-    def get_col_from_select_query(self, query, user):
-        user = str(random.randint(1, 900))
-        globals()[f"Connect_object_{user}"] = self.myConnectionPool.get_connection()
-        print(query)
-        if globals()[f"Connect_object_{user}"].is_connected():
-            try:
-                print("getting cursor for user " + user)
-                myCursor = globals()[f"Connect_object_{user}"].cursor(buffered=True)
-                myCursor.execute(query)
-                colList = []
-                for col in myCursor.description:
-                    colList.append(col[0])
-                if globals()[f"Connect_object_{user}"].is_connected():
-                    globals()[f"Connect_object_{user}"].close()
-                return json.dumps({"status": "ok", "cols": colList})
-            except Error as e:
-                print("Error while creating cursor and executing ", e)
-                if globals()[f"Connect_object_{user}"].is_connected():
-                    globals()[f"Connect_object_{user}"].close()
-                return json.dumps({"status": "error", "errorCode": str(e)})
-
-    def update_query(self, query, user):
-        user = str(random.randint(1, 900))
-        globals()[f"Connect_object_{user}"] = self.myConnectionPool.get_connection()
-        print(query)
-        if globals()[f"Connect_object_{user}"].is_connected():
-            try:
-                my_cursor = globals()[f"Connect_object_{user}"].cursor(buffered=True)
-                my_cursor.execute(query)
-            except Error as e:
-                print("Error while creating cursor and executing ", e)
-                if globals()[f"Connect_object_{user}"].is_connected():
-                    globals()[f"Connect_object_{user}"].close()
-                return False
-
-        globals()[f"Connect_object_{user}"].commit()
-        if globals()[f"Connect_object_{user}"].is_connected():
-            globals()[f"Connect_object_{user}"].close()
-        return True
-
-    def check(self, query, user):
-        user = str(random.randint(1, 900))
-        globals()[f"Connect_object_{user}"] = self.myConnectionPool.get_connection()
-        print(query)
         try:
-            my_cursor = globals()[f"Connect_object_{user}"].cursor(buffered=True)
-            my_cursor.execute(query)
+            self.myConnectionPool = pooling.MySQLConnectionPool(
+                pool_name="pynative_pool",
+                pool_size=5,
+                pool_reset_session=True,
+                host="quicktranslate.online",
+                database="onlinetranscribe",
+                user="root",
+                password="adHawk01",
+            )
+
+            # Run once on startup
+            self.update_query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))")
+            self.update_query("SET @@lc_time_names = 'he_IL'")
+
+            MySQLClass.__instance = self
+            print("Connection pool ready:", self.myConnectionPool.pool_name)
+
         except Error as e:
-            print("Error while creating cursor and executing ", e)
-            if globals()[f"Connect_object_{user}"].is_connected():
-                globals()[f"Connect_object_{user}"].close()
+            print("Error while connecting to MySQL pool:", e)
+            raise
 
-        num_of_records = 0
-        for row in my_cursor:
-            num_of_records = num_of_records + 1
+    # ---------- internal helper ----------
+    def _get_conn(self):
+        return self.myConnectionPool.get_connection()
 
-        if globals()[f"Connect_object_{user}"].is_connected():
-            globals()[f"Connect_object_{user}"].close()
+    # ---------- public API ----------
+    def select_query(self, query, params=None):
+        conn = None
+        cursor = None
+        try:
+            conn = self._get_conn()
+            cursor = conn.cursor(buffered=True)
+            cursor.execute(query, params or ())
+            return cursor.fetchall()
 
-        if num_of_records > 0:
-            return True
-        else:
+        except Error as e:
+            print("select_query error:", e)
             return False
 
-    def validate_query(self, query, user):
-        user = str(random.randint(1, 900))
-        globals()[f"Connect_object_{user}"] = self.myConnectionPool.get_connection()
-        print("got connection in validate query")
-        print(query)
-        if globals()[f"Connect_object_{user}"].is_connected():
-            try:
-                print("getting cursor for user " + user)
-                myCursor = globals()[f"Connect_object_{user}"].cursor(buffered=True)
-                print("got cursor in validate query")
-                myCursor.execute(query)
-                print("query was executed in validate query")
-                if globals()[f"Connect_object_{user}"].is_connected():
-                    globals()[f"Connect_object_{user}"].close()
-                print("released connection in validate query")
-                return json.dumps({"status": "ok"})
-            except Error as e:
-                print("Error while creating cursor and executing ", e)
-                if globals()[f"Connect_object_{user}"].is_connected():
-                    globals()[f"Connect_object_{user}"].close()
-                print("released connection in validate query 2")
-                return json.dumps({"status": "error", "errorCode": str(e)})
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
 
+    def get_col_from_select_query(self, query, params=None):
+        conn = None
+        cursor = None
+        try:
+            conn = self._get_conn()
+            cursor = conn.cursor(buffered=True)
+            cursor.execute(query, params or ())
+            cols = [col[0] for col in cursor.description]
+            return json.dumps({"status": "ok", "cols": cols})
+
+        except Error as e:
+            print("get_col_from_select_query error:", e)
+            return json.dumps({"status": "error", "errorCode": str(e)})
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    def update_query(self, query, params=None):
+        conn = None
+        cursor = None
+        try:
+            conn = self._get_conn()
+            cursor = conn.cursor(buffered=True)
+            cursor.execute(query, params or ())
+            conn.commit()
+            return True
+
+        except Error as e:
+            print("update_query error:", e)
+            if conn:
+                conn.rollback()
+            return False
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    def check(self, query, params=None):
+        res = self.select_query(query, params)
+        return bool(res)  # True if any rows
+
+    def validate_query(self, query, params=None):
+        # Just executes to see if valid
+        conn = None
+        cursor = None
+        try:
+            conn = self._get_conn()
+            cursor = conn.cursor(buffered=True)
+            cursor.execute(query, params or ())
+            return json.dumps({"status": "ok"})
+
+        except Error as e:
+            print("validate_query error:", e)
+            return json.dumps({"status": "error", "errorCode": str(e)})
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
