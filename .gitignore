@@ -1,6 +1,35 @@
-venv/
+# ✅ Python bytecode and cache
 __pycache__/
 *.pyc
-.env
+
+# ✅ Virtual environments
+venv/
+
+# ✅ Flask-specific directories (instance holds configs/data, often untracked)
 instance/
+
+# ✅ Log files
 *.log
+
+# ✅ Environment variables (keep secrets out of version control)
+.env
+
+# ✅ IDE/editor settings
+.idea/        # JetBrains IDEs like PyCharm
+.vscode/      # Visual Studio Code
+
+# ✅ OS-specific files
+.DS_Store     # macOS
+Thumbs.db     # Windows
+
+# ✅ Test output and coverage reports
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+*.cover
+nosetests.xml
+coverage.xml
+
+# ✅ Development SSL certificates (do not commit self-signed certs)
+ssl/

@@ -1,3 +1,4 @@
+import os
 from mysql.connector import Error, pooling
 import json
 
@@ -21,10 +22,10 @@ class MySQLClass:
                 pool_name="pynative_pool",
                 pool_size=5,
                 pool_reset_session=True,
-                host="quicktranslate.online",
-                database="onlinetranscribe",
-                user="root",
-                password="adHawk01",
+                host=os.environ.get("DB_HOST"),
+                database=os.environ.get("DB_NAME"),
+                user=os.environ.get("DB_USER"),
+                password=os.environ.get("DB_PASSWORD"),
             )
 
             # Run once on startup
