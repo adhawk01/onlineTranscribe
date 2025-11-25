@@ -1,7 +1,7 @@
 import os
 from app import create_app
 from dotenv import load_dotenv
-
+from asgiref.wsgi import WsgiToAsgi   # ✅ NEW: to wrap Flask app as ASGI
 
 
 # 💡 AUTO-INCLUDE DEV SSL SETUP
@@ -10,8 +10,14 @@ def run_dev_ssl_setup():
     dev_ssl_setup.create_dev_ssl_cert()
 
 
-load_dotenv() # Load environment variables from .env file
-app = create_app() # Create the Flask app instance
+load_dotenv()  # Load environment variables from .env file
+
+# ✅ Create the Flask app instance
+app = create_app()
+
+# ✅ Expose ASGI app for uvicorn (main:asgi_app)
+asgi_app = WsgiToAsgi(app)
+
 
 if __name__ == "__main__":
     # Use FLASK_ENV to control mode (defaults to development)
