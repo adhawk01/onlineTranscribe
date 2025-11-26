@@ -8,6 +8,7 @@ class Config:
     # 🌍 General
     FLASK_ENV = os.getenv("FLASK_ENV", "production")
     APP_NAME = os.getenv("APP_NAME", "OnlineTranscribe")
+    SECRET_KEY = os.getenv("SECRET_KEY", "fallback-insecure-key")
 
     # 🧰 Ports
     DEVELOPMENT_PORT = int(os.getenv("DEV_PORT", 5050))

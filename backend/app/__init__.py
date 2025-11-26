@@ -21,7 +21,9 @@ def create_app():
     )
 
     from app.routes.home_routes import home_bp
+    from app.routes.auth_routes import auth_bp
     app.register_blueprint(home_bp)
+    app.register_blueprint(auth_bp)
 
     # Only serve React build in production
     if os.getenv("FLASK_ENV") == "production":
