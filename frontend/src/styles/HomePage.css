@@ -1,0 +1,171 @@
+/* Full-page layout */
+.home-page {
+  min-height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top left, #eef2ff 0, #e5e7eb 45%, #e2e8f0 100%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Top bar */
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.75rem;
+  background: #0f172a;
+  color: #e5e7eb;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
+}
+
+.home-logo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.home-user {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Main content */
+.home-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.home-card {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+  box-sizing: border-box;
+}
+
+/* Titles */
+.home-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.home-subtitle {
+  margin: 0 0 1.6rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+/* Actions layout */
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* Buttons */
+.home-btn {
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition:
+    transform 0.06s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+}
+
+.home-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.home-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Primary button (login/register) */
+.home-btn-primary {
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.35);
+}
+
+/* Secondary button (logout) */
+.home-btn-secondary {
+  background: #0f172a;
+  color: #e5e7eb;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
+}
+
+/* Ghost button (check protected) */
+.home-btn-ghost {
+  background: transparent;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+/* Status message */
+.home-message {
+  margin-top: 1rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.home-message-success {
+  background: #ecfdf3;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.home-message-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Little label above actions */
+.home-section-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin-bottom: 0.35rem;
+}
+
+/* Responsive tweak */
+@media (max-width: 640px) {
+  .home-card {
+    padding: 1.8rem 1.4rem;
+  }
+
+  .home-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
