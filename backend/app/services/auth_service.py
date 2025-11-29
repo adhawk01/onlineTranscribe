@@ -55,3 +55,4 @@ def login_user(email: str, password: str):
             "account_type": account_type
         }
     }
+

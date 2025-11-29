@@ -14,7 +14,7 @@ def start_react_dev():
     """Start React development server."""
     print("⚛️ Starting React development server...")
     shell = platform.system() == "Windows"
-    return subprocess.Popen(["npm", "start"], cwd="frontend", shell=shell)
+    return subprocess.Popen(["npm", "run", "dev"], cwd="frontend", shell=shell)
 
 
 def build_react():

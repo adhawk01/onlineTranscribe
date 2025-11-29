@@ -20,7 +20,6 @@ def register():
 
 def login():
     data = request.json
-
     try:
         result = auth_service.login_user(
             email=data["user_email"],
@@ -31,3 +30,7 @@ def login():
         return jsonify({"error": str(ve)}), 401
     except Exception:
         return jsonify({"error": "Server error"}), 500
+
+
+def protected_route():
+    return jsonify({"message": "Protected access granted!"}), 200
