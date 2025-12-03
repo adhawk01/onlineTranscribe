@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 
 # ✅ Virtual environments
-venv/
+backend/venv/
 
 # ✅ Flask-specific directories (instance holds configs/data, often untracked)
 instance/
