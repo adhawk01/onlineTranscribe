@@ -1,5 +1,5 @@
-import os
 from mysql.connector import Error, pooling
+from app.config import Config
 import json
 
 
@@ -22,10 +22,10 @@ class MySQLClass:
                 pool_name="pynative_pool",
                 pool_size=5,
                 pool_reset_session=True,
-                host=os.environ.get("DB_HOST"),
-                database=os.environ.get("DB_NAME"),
-                user=os.environ.get("DB_USER"),
-                password=os.environ.get("DB_PASSWORD"),
+                host=Config.DB_HOST,
+                database=Config.DB_NAME,
+                user=Config.DB_USER,
+                password=Config.DB_PASSWORD,
             )
 
             # Run once on startup
